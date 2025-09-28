@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishAlert - Cybersecurity Threat Detection</title>
+    <style>
+        :root {
+            --primary-dark: #0a192f;
+            --secondary-dark: #112240;
+            --accent-color: #64ffda;
+            --text-light: #e6f1ff;
+            --warning-color: #ffd700;
+            --danger-color: #ff6b6b;
+            --safe-color: #64ff64;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: var(--secondary-dark);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            overflow: hidden;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            background-color: rgba(100, 255, 218, 0.1);
+        }
+
+        .tab-btn.active {
+            border-bottom: 3px solid var(--accent-color);
+            background-color: rgba(100, 255, 218, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+            background-color: var(--secondary-dark);
+            padding: 30px;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            margin-bottom: 30px;
+            min-height: 500px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(10, 25, 47, 0.7);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            border-radius: var(--border-radius);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background-color: var(--accent-color);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.4);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(10, 25, 47, 0.7);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .danger {
+            border-left-color: var(--danger-color);
+        }
+
+        .warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .safe {
+            border-left-color: var(--safe-color);
+        }
+
+        .warnings-list, .patterns-list {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+
+        .warnings-list li, .patterns-list li {
+            margin-bottom: 8px;
+        }
+
+        .tip-card {
+            background-color: rgba(10, 25, 47, 0.7);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .tip-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(100, 255, 218, 0.2);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛡️ PhishAlert</h1>
+            <p>Advanced Cybersecurity Threat Detection System</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="url-checker">🔗 URL Checker</button>
+            <button class="tab-btn" data-tab="message-checker">📱 Message Analyzer</button>
+            <button class="tab-btn" data-tab="safety-tips">📚 Safety Guide</button>
+        </div>
+
+        <div id="url-checker" class="tab-content active">
+            <h2>URL Safety Check</h2>
+            <p>Enter a URL to check if it's safe or suspicious</p>
+            
+            <div class="form-group">
+                <label for="url-input">Website URL:</label>
+                <input type="text" id="url-input" placeholder="https://example.com">
+            </div>
+            
+            <button id="check-url-btn" class="btn">🔍 Check URL Safety</button>
+            
+            <div id="url-result" class="result-container" style="display: none;">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+
+        <div id="message-checker" class="tab-content">
+            <h2>Message Analysis</h2>
+            <p>Paste a suspicious message to analyze for phishing indicators</p>
+            
+            <div class="form-group">
+                <label for="message-input">Suspicious Message:</label>
+                <textarea id="message-input" placeholder="Paste the suspicious message here..."></textarea>
+            </div>
+            
+            <button id="analyze-message-btn" class="btn">🔍 Analyze Message</button>
+            
+            <div id="message-result" class="result-container" style="display: none;">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+
+        <div id="safety-tips" class="tab-content">
+            <h2>Cybersecurity Safety Guide</h2>
+            
+            <div class="tip-card">
+                <h3>🛡️ What Are Phishing Attacks?</h3>
+                <p>Phishing is when criminals try to trick you into giving them your personal information by pretending to be someone trustworthy.</p>
+            </div>
+            
+            <div class="tip-card">
+                <h3>🚨 Common Scammer Tricks</h3>
+                <ul>
+                    <li>Urgent messages: "Your account will be closed in 24 hours!"</li>
+                    <li>Fake prizes: "You've won ₹1 lakh! Click here to claim!"</li>
+                    <li>Fake security alerts: "Your account has been compromised!"</li>
+                    <li>Tech support scams: "Your computer is infected!"</li>
+                </ul>
+            </div>
+            
+            <div class="tip-card">
+                <h3>✅ Do's - Always Follow These</h3>
+                <ul>
+                    <li>Check the sender's email address carefully</li>
+                    <li>Look for spelling and grammar mistakes</li>
+                    <li>Verify urgent requests through official channels</li>
+                    <li>Use strong, unique passwords</li>
+                    <li>Keep your software updated</li>
+                </ul>
+            </div>
+            
+            <div class="tip-card">
+                <h3>❌ Don'ts - Never Do These</h3>
+                <ul>
+                    <li>Don't click suspicious links</li>
+                    <li>Don't share passwords or PINs with anyone</li>
+                    <li>Don't download attachments from unknown senders</li>
+                    <li>Don't use public WiFi for banking</li>
+                    <li>Don't trust "urgent" money requests</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>PhishAlert - Cybersecurity Threat Detection System | Learning Version</p>
+            <p>⚠️ This is a demonstration tool. Always verify suspicious content through official channels.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all tabs and buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                button.classList.add('active');
+                document.getElementById(button.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Real URL checking with FastAPI
+        async function checkURLWithAPI(url) {
+            try {
+                const response = await fetch('http://localhost:8000/check-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Error:', error);
+                return {
+                    message: "❌ Error connecting to security server",
+                    score: 0,
+                    warnings: ["Cannot check URL right now. Please try again later."]
+                };
+            }
+        }
+
+        // Real message checking with FastAPI
+        async function checkMessageWithAPI(message) {
+            try {
+                const response = await fetch('http://localhost:8000/check-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Error:', error);
+                return {
+                    message: "❌ Error connecting to security server",
+                    score: 0,
+                    patterns: ["Cannot analyze message right now. Please try again later."]
+                };
+            }
+        }
+
+        // Update the URL check button click handler
+        document.getElementById('check-url-btn').addEventListener('click', async () => {
+            const url = document.getElementById('url-input').value.trim();
+            const resultContainer = document.getElementById('url-result');
+            
+            if (!url) {
+                alert('Please enter a URL to check');
+                return;
+            }
+            
+            // Show loading state
+            resultContainer.style.display = 'block';
+            resultContainer.innerHTML = '<div class="result-header"><span class="result-icon">⏳</span><span class="result-title">Analyzing URL with security server...</span></div>';
+            
+            // Use the REAL API call
+            const result = await checkURLWithAPI(url);
+            displayURLResult(result);
+        });
+
+        // Update the message check button click handler
+        document.getElementById('analyze-message-btn').addEventListener('click', async () => {
+            const message = document.getElementById('message-input').value.trim();
+            const resultContainer = document.getElementById('message-result');
+            
+            if (!message) {
+                alert('Please enter a message to analyze');
+                return;
+            }
+            
+            // Show loading state
+            resultContainer.style.display = 'block';
+            resultContainer.innerHTML = '<div class="result-header"><span class="result-icon">⏳</span><span class="result-title">Analyzing message with security server...</span></div>';
+            
+            // Use the REAL API call
+            const result = await checkMessageWithAPI(message);
+            displayMessageResult(result);
+        });
+
+        // Improved display functions that handle API responses
+        function displayURLResult(result) {
+            const resultContainer = document.getElementById('url-result');
+            
+            // Determine the style based on the result message
+            let className = "unknown";
+            if (result.message.includes("SAFE")) {
+                className = "safe";
+            } else if (result.message.includes("WARNING")) {
+                className = "warning";
+            } else if (result.message.includes("DANGER")) {
+                className = "danger";
+            }
+            
+            resultContainer.className = `result-container ${className}`;
+            
+            let html = `
+                <div class="result-header">
+                    <span class="result-icon">${getIconFromMessage(result.message)}</span>
+                    <span class="result-title">${result.message}</span>
+                </div>
+                <p><strong>Threat Score:</strong> ${result.score}/10</p>
+            `;
+            
+            if (result.warnings && result.warnings.length > 0) {
+                html += `<div class="warnings-list"><strong>Warnings Found:</strong><ul>`;
+                result.warnings.forEach(warning => {
+                    html += `<li>${warning}</li>`;
+                });
+                html += `</ul></div>`;
+            }
+            
+            html += `
+                <div style="margin-top: 15px;">
+                    <strong>💡 Explanation:</strong><br>
+                    We checked this URL against our database of known threats.<br>
+                    Threat scores above 3 are concerning, above 5 are dangerous.
+                </div>
+            `;
+            
+            resultContainer.innerHTML = html;
+        }
+
+        function displayMessageResult(result) {
+            const resultContainer = document.getElementById('message-result');
+            
+            // Determine the style based on the result message
+            let className = "unknown";
+            if (result.message.includes("SAFE")) {
+                className = "safe";
+            } else if (result.message.includes("WARNING") || result.message.includes("CAUTION")) {
+                className = "warning";
+            } else if (result.message.includes("DANGER")) {
+                className = "danger";
+            }
+            
+            resultContainer.className = `result-container ${className}`;
+            
+            let html = `
+                <div class="result-header">
+                    <span class="result-icon">${getIconFromMessage(result.message)}</span>
+                    <span class="result-title">${result.message}</span>
+                </div>
+                <p><strong>Threat Score:</strong> ${result.score}/10</p>
+            `;
+            
+            if (result.patterns && result.patterns.length > 0) {
+                html += `<div class="patterns-list"><strong>Suspicious Patterns Found:</strong><ul>`;
+                result.patterns.forEach(pattern => {
+                    html += `<li>${pattern}</li>`;
+                });
+                html += `</ul></div>`;
+            }
+            
+            html += `
+                <div style="margin-top: 15px;">
+                    <strong>💡 Explanation:</strong><br>
+                    We analyzed this message for common phishing patterns.<br>
+                    Higher scores indicate more suspicious content.
+                </div>
+            `;
+            
+            resultContainer.innerHTML = html;
+        }
+
+        // Helper function to get appropriate icon
+        function getIconFromMessage(message) {
+            if (message.includes("SAFE")) return "✅";
+            if (message.includes("WARNING") || message.includes("CAUTION")) return "⚠️";
+            if (message.includes("DANGER")) return "🚨";
+            return "❓";
+        }
+    </script>
+</body>
+</html>
